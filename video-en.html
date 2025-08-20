@@ -252,10 +252,15 @@
                 <div class="form-group"><label for="regUsername">Username</label><input type="text" id="regUsername" required></div>
                 <div class="form-group"><label for="regPassword">Password</label><input type="password" id="regPassword" required></div>
                 <div class="form-group">
-                    <label for="regSheetId">Google Sheet ID</label>
+                    <label for="regSheetId">Videos Google Sheet ID</label>
                     <input type="text" id="regSheetId" placeholder="From your spreadsheet URL" required>
+                </div>
+                <!-- NEW: Video Script URL field -->
+                <div class="form-group">
+                    <label for="regVideoScriptUrl">Video Script URL</label>
+                    <input type="text" id="regVideoScriptUrl" placeholder="From your deployed Video Script" required>
                     <p class="field-instructions">
-                        Need help? <a href="https://bebell-digital-solutions.github.io/magic-toolbox-database/en-v03" target="_blank">Follow our guide to get your Sheet ID.</a>
+                        Need help? <a href="https://bebell-digital-solutions.github.io/magic-toolbox-database/en-v03" target="_blank">Follow our guide to get your Sheet ID and Script URL.</a>
                     </p>
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Create Admin Account</button>
@@ -295,9 +300,7 @@
                     <input type="text" id="shareableUrl" readonly>
                     <button id="copyShareableUrlBtn" title="Copy URL"><i class="fas fa-copy"></i></button>
                 </div>
-                <div class="share-buttons" id="shareButtons">
-                    <!-- Social share buttons will be generated here -->
-                </div>
+                <div class="share-buttons" id="shareButtons"></div>
             </div>
             <div class="form-group">
                 <label for="appBrandName">Brand Name</label>
@@ -416,6 +419,7 @@
         const topCtaTextInput = document.getElementById('topCtaText');
         const topCtaLinkInput = document.getElementById('topCtaLink');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const regVideoScriptUrlInput = document.getElementById('regVideoScriptUrl');
 
         // --- UTILITY FUNCTIONS ---
         const fileToBase64 = file => new Promise((resolve, reject) => {
@@ -475,25 +479,35 @@
         
         async function fetchVideos() {
             const urlParams = new URLSearchParams(window.location.search);
-            const userId = urlParams.get('user') || appConfig.userId;
+            const userId = urlParams.get('user');
+            let videoScriptUrl = appConfig.videoScriptUrl;
 
-            if (!appConfig.videoScriptUrl) {
-                // This case is for the admin view before registration is complete.
-                if(!urlParams.has('user')) openModal(registerModal);
+            if (userId) {
+                // If viewing a shared link, we need to fetch the correct script URL
+                const response = await fetch(`${ADMIN_SCRIPT_URL}?action=getUserData&userId=${userId}`);
+                const userData = await response.json();
+                if (userData.status === 'success') {
+                    videoScriptUrl = userData.videoScriptUrl;
+                    applyCustomization(userData); // Apply the specific user's branding
+                } else {
+                    sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">${userData.message || 'Could not find user data.'}</p>`;
+                    return;
+                }
+            }
+            
+            if (!videoScriptUrl) {
+                if(!userId) openModal(registerModal);
                 return;
             }
 
             sectionsContainer.innerHTML = `<p style="text-align:center;">Loading videos...</p>`;
             try {
-                // Append the user ID to the script URL to fetch specific data
-                const response = await fetch(`${appConfig.videoScriptUrl}?user=${userId}`);
+                const response = await fetch(`${videoScriptUrl}?user=${userId || appConfig.userId}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                if (data.status === 'blocked' || data.status === 'pending') {
+                if (data.error) { throw new Error(data.error); }
+                if (data.status === 'pending') {
                     document.body.innerHTML = `<div style="text-align: center; padding: 4rem; font-size: 1.2rem; color: var(--text-light);">Your Directory is waiting for approval. If this persists, please contact Customer Support.</div>`;
                     return;
                 }
@@ -600,7 +614,6 @@
         async function manageVideo(action, data) {
             showNotification(`Processing request...`, 'info');
             try {
-                // All video management actions are associated with the logged-in user's ID
                 const response = await fetch(appConfig.videoScriptUrl, {
                     method: 'POST',
                     mode: 'cors',
@@ -722,6 +735,7 @@
             const username = document.getElementById('regUsername').value;
             const password = document.getElementById('regPassword').value;
             const sheetId = document.getElementById('regSheetId').value;
+            const videoScriptUrl = regVideoScriptUrlInput.value;
             const profilePicFile = regProfilePicInput.files[0];
             
             let profilePicData = {};
@@ -740,7 +754,7 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
                         action: 'registerAdmin',
-                        data: { brandName, username, password, sheetId, profilePic: profilePicData }
+                        data: { brandName, username, password, sheetId, videoScriptUrl, profilePic: profilePicData }
                     }),
                 });
                 if (!response.ok) throw new Error(`Server responded with status: ${response.status}`);
@@ -752,7 +766,7 @@
                         sheetId: sheetId,
                         userId: result.userId,
                         brandName: brandName,
-                        videoScriptUrl: result.videoScriptUrl,
+                        videoScriptUrl: videoScriptUrl,
                         profilePicUrl: result.profilePicUrl || ''
                     };
                     saveConfig();
@@ -819,8 +833,7 @@
                 appPrimaryColorInput.value = appConfig.primaryColor || '#DF1783';
                 topCtaTextInput.value = appConfig.topCtaText || '';
                 topCtaLinkInput.value = appConfig.topCtaLink || '';
-
-                // Generate Share Buttons
+                
                 shareButtonsContainer.innerHTML = '';
                 const encodedUrl = encodeURIComponent(shareableUrl);
                 const shareText = encodeURIComponent(`Check out my Help Center: ${appConfig.brandName}`);
@@ -833,10 +846,7 @@
                 };
                 for (const [name, link] of Object.entries(socials)) {
                     const a = document.createElement('a');
-                    a.href = link;
-                    a.target = '_blank';
-                    a.rel = 'noopener noreferrer';
-                    a.className = 'share-btn';
+                    a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.className = 'share-btn';
                     a.innerHTML = `<i class="fab fa-${name}"></i>`;
                     shareButtonsContainer.appendChild(a);
                 }
@@ -966,10 +976,9 @@
         copyrightYear.textContent = `© ${new Date().getFullYear()} • All rights reserved.`;
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('user')) {
-            // This is a shared view, load the content directly.
+            loadConfig(); // Load admin config to get the ADMIN_SCRIPT_URL
             fetchVideos();
         } else {
-            // This is the admin view, check for config or show registration.
             if (loadConfig()) {
                 fetchVideos();
             } else {
@@ -980,3 +989,4 @@
     </script>
 </body>
 </html>
+     
