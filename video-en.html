@@ -1,0 +1,131 @@
+/**
+ * @license
+ * Copyright 2024 Bebell Digital Solutions
+ *
+ * SCRIPT 2: VIDEO DATA MANAGEMENT
+ * This script provides the API for the video data sheet.
+ */
+
+// --- CONFIGURATION ---
+const SPREADSHEET_ID = "YOUR_VIDEO_SPREADSHEET_ID_HERE"; // <-- IMPORTANT: Manually set this
+const ADMIN_SHEET_ID = "YOUR_ADMIN_SHEET_ID_HERE"; // <-- IMPORTANT: Add the ID of your "Help Center Admins" sheet
+const SHEET_NAME = "Videos";
+const ADMIN_SHEET_NAME = "Admins";
+
+// --- HELPER FUNCTIONS ---
+
+function createFileFromBase64(base64Data, fileName, folder) {
+  const decoded = Utilities.base64Decode(base64Data.split(",")[1]);
+  const blob = Utilities.newBlob(decoded, base64Data.split(';')[0].split(':')[1], fileName);
+  const file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  return file;
+}
+
+function getOrCreateFolder(folderName) {
+  const folders = DriveApp.getFoldersByName(folderName);
+  return folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+}
+
+function createJsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// --- MAIN GET HANDLER ---
+
+function doGet(e) {
+  try {
+    const userId = e.parameter.user;
+    if (!userId) {
+      return createJsonResponse({ error: "User ID is required." });
+    }
+
+    // NEW: Check user status before proceeding
+    const adminSheet = SpreadsheetApp.openById(ADMIN_SHEET_ID).getSheetByName(ADMIN_SHEET_NAME);
+    const adminData = adminSheet.getDataRange().getValues();
+    const adminHeaders = adminData.shift();
+    const userRow = adminData.find(row => row[0] === userId);
+
+    if (!userRow) {
+      return createJsonResponse({ error: "User not found." });
+    }
+
+    const statusIndex = adminHeaders.indexOf('Status');
+    const userStatus = userRow[statusIndex];
+
+    if (userStatus === 'Blocked' || userStatus === 'Waiting for Approval') {
+      return createJsonResponse({ status: 'pending' });
+    }
+    
+    // If status is "Published", proceed to get video data
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+    if (!sheet) {
+      return createJsonResponse({ error: `Sheet "${SHEET_NAME}" not found.` });
+    }
+    const data = sheet.getDataRange().getValues();
+    const headers = data.shift().map(h => h.toLowerCase().replace(/ /g, ''));
+    const json = data.map((row, index) => {
+      let rowData = {};
+      headers.forEach((header, i) => {
+        rowData[header] = (header === 'tags') ? (row[i] ? row[i].toString().split(',').map(tag => tag.trim()) : []) : row[i];
+      });
+      rowData.rowindex = index + 2;
+      return rowData;
+    });
+    return createJsonResponse(json);
+  } catch (error) {
+    return createJsonResponse({ status: 'error', message: error.message });
+  }
+}
+
+// --- MAIN POST HANDLER ---
+
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(SHEET_NAME);
+    if (!sheet) throw new Error(`Sheet "${SHEET_NAME}" not found.`);
+
+    const request = JSON.parse(e.postData.contents);
+    const action = request.action;
+    const data = request.data;
+    
+    const columnOrder = ['title', 'description', 'url', 'id', 'thumbnail', 'tags', 'category', 'categorydescription', 'ctatext', 'ctalink'];
+
+    if (action === 'create' || action === 'update') {
+      let thumbnailUrl = "";
+      if (data.thumbnailData && data.thumbnailData.base64) {
+        const assetsFolder = getOrCreateFolder("HelpCenter_Assets");
+        const thumbFile = createFileFromBase64(data.thumbnailData.base64, `thumb_${data.id}`, assetsFolder);
+        thumbnailUrl = `https://drive.google.com/uc?id=${thumbFile.getId()}`;
+      }
+      
+      const rowData = columnOrder.map(header => {
+          if (header === 'thumbnail' && thumbnailUrl) return thumbnailUrl;
+          return data[header] || "";
+      });
+
+      if (action === 'create') {
+        sheet.appendRow(rowData);
+      } else { // Update
+        if (!data.rowIndex) throw new Error("Row index is missing for update.");
+        if (!thumbnailUrl) {
+            const thumbIndex = columnOrder.indexOf('thumbnail');
+            rowData[thumbIndex] = sheet.getRange(parseInt(data.rowIndex), thumbIndex + 1).getValue();
+        }
+        sheet.getRange(parseInt(data.rowIndex), 1, 1, columnOrder.length).setValues([rowData]);
+      }
+    } else if (action === 'delete') {
+      if (!data.rowIndex) throw new Error("Row index is missing for delete.");
+      sheet.deleteRow(parseInt(data.rowIndex));
+    } else if (action === 'deleteAllData') {
+      sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).clearContent();
+    } else {
+      throw new Error("Invalid action specified.");
+    }
+    
+    return createJsonResponse({ 'status': 'success', 'action': action });
+  } catch (error) {
+    return createJsonResponse({ 'status': 'error', 'message': error.message });
+  }
+}
