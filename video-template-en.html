@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png">
     <style>
+        
         :root {
             --primary: #DF1783;
             --primary-light: #f8a4d4;
@@ -27,8 +28,22 @@
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
             --border-color: #4a5568;
         }
-        html { box-sizing: border-box; overflow-x: hidden; scroll-behavior: smooth; }
-        *, *:before, *:after { box-sizing: inherit; }
+        
+        html { 
+            box-sizing: border-box; 
+            overflow-x: hidden; 
+            scroll-behavior: smooth; 
+           
+        }
+
+        
+        *, *:before, *:after { 
+            box-sizing: inherit; 
+             margin: 0;
+            padding: 0;
+        }
+
+        
         body {
             margin: 0;
             padding-top: 100px;
@@ -37,6 +52,8 @@
             color: var(--text);
             transition: background-color 0.3s, color 0.3s;
         }
+
+        
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem 4rem; margin-bottom: 250px; }
         .top-menu-bar {
             position: fixed;
