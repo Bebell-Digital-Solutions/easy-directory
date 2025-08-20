@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png">
     <style>
-        
         :root {
             --primary: #DF1783;
             --primary-light: #f8a4d4;
@@ -32,7 +31,7 @@
         html { 
             box-sizing: border-box; 
             overflow-x: hidden; 
-            scroll-behavior: smooth;    
+            scroll-behavior: smooth;   
         }
 
         
@@ -495,7 +494,6 @@
             const storedConfig = localStorage.getItem('helpCenterConfig');
             if (storedConfig) {
                 appConfig = JSON.parse(storedConfig);
-                applyCustomization();
                 return true;
             }
             return false;
@@ -505,19 +503,22 @@
             localStorage.setItem('helpCenterConfig', JSON.stringify(appConfig));
         }
 
-        function applyCustomization() {
-            if (appConfig.primaryColor) {
-                document.documentElement.style.setProperty('--primary', appConfig.primaryColor);
+        // BUG FIX: Modified this function to accept a config object.
+        // This allows applying branding from a shared link or fresh server data
+        // without relying only on the global 'appConfig'.
+        function applyCustomization(config = appConfig) {
+            if (config.primaryColor) {
+                document.documentElement.style.setProperty('--primary', config.primaryColor);
             }
-            if (appConfig.logoUrl) {
-                appLogo.src = appConfig.logoUrl;
+            if (config.logoUrl) {
+                appLogo.src = config.logoUrl;
             }
-            if (appConfig.brandName) {
-                appBrandNameDisplay.textContent = appConfig.brandName;
+            if (config.brandName) {
+                appBrandNameDisplay.textContent = config.brandName;
             }
-            if (appConfig.topCtaText && appConfig.topCtaLink) {
-                topCtaBtn.textContent = appConfig.topCtaText;
-                topCtaBtn.href = appConfig.topCtaLink;
+            if (config.topCtaText && config.topCtaLink) {
+                topCtaBtn.textContent = config.topCtaText;
+                topCtaBtn.href = config.topCtaLink;
                 topCtaBtn.style.display = 'flex';
             } else {
                 topCtaBtn.style.display = 'none';
@@ -530,15 +531,20 @@
             let videoScriptUrl = appConfig.videoScriptUrl;
 
             if (userId) {
-                // If viewing a shared link, we need to fetch the correct script URL
-                const response = await fetch(`${ADMIN_SCRIPT_URL}?action=getUserData&userId=${userId}`);
-                const userData = await response.json();
-                if (userData.status === 'success') {
-                    videoScriptUrl = userData.videoScriptUrl;
-                    applyCustomization(userData); // Apply the specific user's branding
-                } else {
-                    sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">${userData.message || 'Could not find user data.'}</p>`;
-                    return;
+                // If viewing a shared link, fetch the specific user's branding and script URL
+                try {
+                    const response = await fetch(`${ADMIN_SCRIPT_URL}?action=getUserData&userId=${userId}`);
+                    const userData = await response.json();
+                    if (userData.status === 'success' && userData.data) {
+                        videoScriptUrl = userData.data.videoScriptUrl;
+                        // BUG FIX: Pass the fetched user data directly to apply their specific branding.
+                        applyCustomization(userData.data); 
+                    } else {
+                        throw new Error(userData.message || 'Could not find user data.');
+                    }
+                } catch (error) {
+                     sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">${error.message}</p>`;
+                     return;
                 }
             }
             
@@ -549,6 +555,7 @@
 
             sectionsContainer.innerHTML = `<p style="text-align:center;">Loading videos...</p>`;
             try {
+                // Use the determined video script URL (either the admin's or the shared user's)
                 const response = await fetch(`${videoScriptUrl}?user=${userId || appConfig.userId}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
@@ -564,7 +571,7 @@
                 renderContent();
             } catch (error) {
                 console.error('Error fetching videos:', error);
-                sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">${error.message}</p>`;
+                sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">Failed to load video data. Please check your Video Script URL and Sheet permissions. Error: ${error.message}</p>`;
             }
         }
 
@@ -1020,20 +1027,43 @@
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); const icon = darkModeToggle.querySelector('i'); icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon'; }
 
         // --- INITIALIZATION ---
-        copyrightYear.textContent = `© ${new Date().getFullYear()} • All rights reserved.`;
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('user')) {
-            loadConfig(); // Load admin config to get the ADMIN_SCRIPT_URL
-            fetchVideos();
-        } else {
-            if (loadConfig()) {
-                fetchVideos();
+        async function initializeApp() {
+            copyrightYear.textContent = `© ${new Date().getFullYear()} • All rights reserved.`;
+            const urlParams = new URLSearchParams(window.location.search);
+            const isSharedLink = urlParams.has('user');
+
+            if (isSharedLink) {
+                // For a shared link, we don't need the admin's local config.
+                // We just fetch the specific user's data and videos.
+                await fetchVideos();
             } else {
-                openModal(registerModal);
+                // This is the admin's view.
+                if (loadConfig()) {
+                    // BUG FIX: Fetch the latest user data from the server to ensure branding (like the logo) is up-to-date.
+                    try {
+                        const response = await fetch(`${ADMIN_SCRIPT_URL}?action=getUserData&userId=${appConfig.userId}`);
+                        const userData = await response.json();
+                        if (userData.status === 'success' && userData.data) {
+                            // Update local config with fresh data from server
+                            Object.assign(appConfig, userData.data);
+                            saveConfig(); // Save the fresh config back to localStorage
+                        }
+                    } catch (error) {
+                        console.error("Could not refresh admin data:", error);
+                        // Continue with local data if refresh fails
+                    }
+                    
+                    applyCustomization(); // Apply the potentially updated config
+                    await fetchVideos(); // Fetch videos using the config
+                } else {
+                    // No config found, must be a new admin.
+                    openModal(registerModal);
+                }
             }
         }
+
+        initializeApp();
     });
     </script>
 </body>
 </html>
-     
