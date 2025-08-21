@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Easy Directory</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #DF1783;
@@ -54,11 +56,17 @@
         .fab:hover { background-color: var(--border-color); }
         .header { text-align: center; margin-bottom: 2rem; padding: 2rem 1rem; position: relative; }
         .admin-greeting {
-            background-color: var(--primary); color: white; padding: 6px 16px;
-            border-radius: 20px; font-size: 0.9rem; font-weight: 500;
+            background-color: var(--primary); color: white; padding: 8px 20px;
+            border-radius: 25px; font-size: 1.5rem; font-weight: 500;
             display: inline-block; margin-bottom: 1rem;
+            font-family: 'Caveat', cursive;
         }
-        .header h1 { font-size: 2.8rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .header h1 { font-size: 2.8rem; color: var(--primary); margin-bottom: 0.5rem; min-height: 50px; }
+        #brand-anim-span::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
         .header p { font-size: 1.2rem; color: var(--text-light); }
         .content-wrapper { display: block; }
         .video-content { display: none; }
@@ -86,9 +94,26 @@
         .profile-pic-preview i { font-size: 2rem; }
         .profile-pic-uploader input[type="file"] { display: none; }
         .main-footer { padding: 2rem 1rem; text-align: center; color: var(--text-light); border-top: 1px solid var(--border-color); margin-top: 4rem; }
-        .footer-social-links { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; }
-        .footer-social-link { color: white; background-color: var(--primary); width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.2rem; transition: all 0.3s ease; }
-        .footer-signature { font-size: 0.9rem; }
+        .footer-social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+        .footer-social-link { 
+            color: var(--text-light); 
+            background-color: transparent; 
+            width: 40px; height: 40px; 
+            border-radius: 8px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            font-size: 1.5rem; 
+            transition: all 0.3s ease; 
+        }
+        .footer-social-link:hover {
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        .footer-signature { font-size: 10px; }
+        .footer-signature a { color: var(--text-light); text-decoration: none; }
+        .footer-signature a:hover { text-decoration: underline; color: var(--primary); }
         .footer-signature .heart-icon { display: inline-block; width: 1em; height: 1em; fill: var(--primary); vertical-align: middle; }
         .disabled-page { text-align: center; padding: 4rem 1rem; }
         .disabled-page .unlink-icon { width: 150px; height: 150px; color: var(--primary); margin-bottom: 2rem; }
@@ -96,8 +121,10 @@
         .disabled-page p { color: var(--text-light); }
         .notification-banner { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--accent); color: var(--secondary); padding: 1.5rem 2.5rem; border-radius: 12px; box-shadow: var(--shadow); z-index: 3000; font-weight: 500; opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; }
         .notification-banner.show { opacity: 1; visibility: visible; }
+        .video-section { margin-bottom: 2rem; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
         .card { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s ease; position: relative; }
+        .card.hidden-by-default { display: none; }
         .card-admin-controls { position: absolute; top: 10px; right: 10px; z-index: 5; display: none; gap: 8px; }
         body.admin-logged-in .card-admin-controls { display: flex; }
         .admin-btn { background-color: rgba(0,0,0,0.6); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -109,13 +136,40 @@
         .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px; }
         .close-btn { position: absolute; top: -15px; right: -15px; color: white; background: #1a202c; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #videoPlaceholder { text-align: center; padding: 4rem 0; }
+        .show-more-btn { display: block; margin: 2rem auto 0; }
+        #backToTopBtn {
+            display: none; position: fixed; bottom: 20px; right: 30px; z-index: 99;
+            border: none; outline: none; background-color: var(--primary); color: white;
+            cursor: pointer; padding: 0; width: 50px; height: 50px; border-radius: 50%;
+            font-size: 18px; box-shadow: var(--shadow);
+        }
+        #backToTopBtn:hover { opacity: 0.8; }
+        @media (max-width: 768px) {
+            .container { padding: 1rem 1.5rem; }
+            .grid-container {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 1rem;
+                gap: 1rem;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .grid-container::-webkit-scrollbar { display: none; }
+            .grid-container .card {
+                flex: 0 0 80%;
+                width: 80%;
+                scroll-snap-align: start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="top-menu-bar">
         <div class="top-menu-content">
             <div class="logo-container">
-                <img id="appLogo" src="https://placehold.co/40x40/f7fafc/2d3748?text=ED" alt="App Logo">
+                <img id="appLogo" src="https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png" alt="App Logo">
                 <span id="appBrandNameDisplay">Easy Directory</span>
             </div>
             <div class="top-menu-actions">
@@ -129,8 +183,8 @@
 
     <div class="container">
         <header class="header">
-            <div id="adminGreeting" style="display: none;" class="admin-greeting"></div>
-            <h1 id="main-header-title">Welcome to Easy Directory</h1>
+            <div id="adminGreeting" class="admin-greeting">Hey there! 👋</div>
+            <h1 id="main-header-title">Welcome to <span id="brand-anim-span"></span></h1>
             <p id="main-header-subtitle">A curated collection of hand-picked videos. Click to watch.</p>
         </header>
 
@@ -142,6 +196,9 @@
                 </div>
                 <button class="btn" id="addNewEntryBtn"><i class="fas fa-plus"></i> Add New Video</button>
             </div>
+            
+            <div id="videoPlaceholder"></div>
+
             <div class="video-content">
                 <div class="tag-filters" id="tagFilters"></div>
                 <div id="sections-container"></div>
@@ -156,6 +213,8 @@
     </div>
 
     <footer class="main-footer" id="mainFooter" style="display: none;"></footer>
+
+    <button id="backToTopBtn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
 
     <!-- MODALS -->
     <div id="loginModal" class="modal">
@@ -189,7 +248,6 @@
         </div>
     </div>
     
-    <!-- Other modals will be added here -->
     <div class="overlay">
         <div class="video-container">
             <button class="close-btn"><i class="fas fa-times"></i></button>
@@ -202,8 +260,9 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- CONFIGURATION ---
-        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxo7tVwq_6UYTPBI-6RZpnYl-nwiP39wrtI6XradBzWL7Vr5BNMwOMq2vNyByHFsCy6hA/exec'; // <-- IMPORTANT: REPLACE WITH YOUR DEPLOYED SCRIPT URL
-        const LIFETIME_ACCESS_URL = 'https://elnegocio.digital/'; // <-- IMPORTANT: REPLACE WITH YOUR LANDING PAGE URL
+        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxL0X-2yH9-L7x1313-gYm_Y-1b_Zc-1G_f_E_D_C_B_A/exec'; // <-- IMPORTANT: REPLACE WITH YOUR DEPLOYED SCRIPT URL
+        const LIFETIME_ACCESS_URL = 'https://your-landing-page.com'; // <-- IMPORTANT: REPLACE WITH YOUR LANDING PAGE URL
+        const DEFAULT_LOGO_URL = 'https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png';
 
         // --- STATE ---
         let appConfig = {};
@@ -224,6 +283,7 @@
         const searchInput = document.getElementById('searchInput');
         const adminGreeting = document.getElementById('adminGreeting');
         const mainHeaderTitle = document.getElementById('main-header-title');
+        const brandAnimSpan = document.getElementById('brand-anim-span');
         const appLogo = document.getElementById('appLogo');
         const appBrandNameDisplay = document.getElementById('appBrandNameDisplay');
         const loginMessage = document.getElementById('login-message');
@@ -231,14 +291,24 @@
         const sectionsContainer = document.getElementById('sections-container');
         const overlay = document.querySelector('.overlay');
         const iframe = document.querySelector('iframe');
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const darkModeToggle = document.getElementById('darkModeToggle');
 
         // --- INITIALIZATION ---
         async function initializeApp() {
+            // Apply theme on load
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.querySelector('i').className = 'fas fa-sun';
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('user');
 
             if (userId) {
                 document.querySelector('.controls-container').style.display = 'none';
+                adminGreeting.style.display = 'none';
                 try {
                     const response = await fetch(`${ADMIN_SCRIPT_URL}?action=getUserData&userId=${userId}`);
                     const result = await response.json();
@@ -255,6 +325,10 @@
                 } catch (error) {
                     showDisabledPage('Error', `Could not load directory: ${error.message}`);
                 }
+            } else {
+                renderFooter({});
+                videoPlaceholder.style.display = 'block';
+                typeWriterAnimation();
             }
         }
 
@@ -262,20 +336,51 @@
         function applyCustomization(config) {
             appConfig = config;
             document.documentElement.style.setProperty('--primary', config.primarycolor || '#DF1783');
-            mainHeaderTitle.textContent = `Welcome to ${config.brandname || 'Easy Directory'}`;
+            mainHeaderTitle.innerHTML = `Welcome to ${config.brandname || 'Easy Directory'}`;
             document.title = config.brandname || 'Easy Directory';
-            appLogo.src = config.logourl || 'https://placehold.co/40x40/f7fafc/2d3748?text=ED';
+            appLogo.src = config.logourl || DEFAULT_LOGO_URL;
             appBrandNameDisplay.textContent = config.brandname || 'Easy Directory';
             renderFooter(config);
+        }
+        
+        function typeWriterAnimation() {
+            const words = ["Easy Directory", "Your Brand"];
+            let wordIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function type() {
+                const currentWord = words[wordIndex];
+                let displayText = isDeleting 
+                    ? currentWord.substring(0, charIndex--)
+                    : currentWord.substring(0, charIndex++);
+                
+                brandAnimSpan.textContent = displayText;
+
+                let typeSpeed = isDeleting ? 100 : 200;
+
+                if (!isDeleting && charIndex === currentWord.length + 1) {
+                    typeSpeed = 2000; // Pause at end of word
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    wordIndex = (wordIndex + 1) % words.length;
+                    typeSpeed = 500; // Pause before new word
+                }
+                
+                setTimeout(type, typeSpeed);
+            }
+            type();
         }
 
         function renderFooter(config) {
             const socialLinks = {
-                whatsapp: { url: config.whatsappurl, icon: 'fab fa-whatsapp' },
-                instagram: { url: config.instagramurl, icon: 'fab fa-instagram' },
-                facebook: { url: config.facebookurl, icon: 'fab fa-facebook' },
-                youtube: { url: config.youtubeurl, icon: 'fab fa-youtube' },
-                linkedin: { url: config.linkedinurl, icon: 'fab fa-linkedin' }
+                whatsapp: { url: config.whatsappurl || 'https://wa.me/18296203970', icon: 'fab fa-whatsapp' },
+                instagram: { url: config.instagramurl || 'https://instagram.com/bebelldigitalsolutions', icon: 'fab fa-instagram' },
+                facebook: { url: config.facebookurl || 'https://facebook.com/bebelldigitalsolutions', icon: 'fab fa-facebook' },
+                x: { url: config.xurl || 'https://x.com/BebellDigitalS', icon: 'fab fa-twitter' },
+                youtube: { url: config.youtubeurl || 'https://www.youtube.com/@bebelldigitalsolutions?sub_confirmation=1', icon: 'fab fa-youtube' },
+                linkedin: { url: config.linkedinurl || 'https://www.linkedin.com/in/bebell-digital-solutions-9a4b5a239/', icon: 'fab fa-linkedin' }
             };
 
             let socialLinksHTML = Object.entries(socialLinks)
@@ -283,13 +388,13 @@
                 .map(([name, data]) => `<a href="${data.url}" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="${name}"><i class="${data.icon}"></i></a>`)
                 .join('');
 
-            const heartSVG = `<svg class="heart-icon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+            const heartSVG = `<svg class="heart-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
             
             mainFooter.innerHTML = `
                 <div class="footer-social-links">${socialLinksHTML}</div>
                 <div class="footer-signature">
                     Copyright © ${new Date().getFullYear()} • ${config.brandname || 'Your Brand'} • All rights Reserved.<br>
-                    Powered with ${heartSVG} by Bebell Digital Solutions.
+                    Powered with ${heartSVG} by <a href="https://bebelldigitalsolutions.com" target="_blank" rel="noopener noreferrer">Bebell Digital Solutions.</a>
                 </div>
             `;
             mainFooter.style.display = 'block';
@@ -308,8 +413,7 @@
             document.body.classList.add('admin-logged-in');
             applyCustomization(userData);
             
-            adminGreeting.textContent = `Hi ${userData.username || userData.email},`;
-            adminGreeting.style.display = 'inline-block';
+            adminGreeting.textContent = `Hi ${userData.username || userData.email} 😃`;
             
             searchInput.disabled = false;
             videoContent.style.display = 'block';
@@ -321,6 +425,7 @@
 
         // --- DATA FETCHING & RENDERING ---
         async function fetchVideos(videoScriptUrl, userId) {
+            videoPlaceholder.style.display = 'none';
             sectionsContainer.innerHTML = `<p style="text-align:center;">Loading videos...</p>`;
             try {
                 const response = await fetch(`${videoScriptUrl}?user=${userId}`);
@@ -345,11 +450,28 @@
             sectionsContainer.innerHTML = '';
             for (const categoryName in groupedByCategory) {
                 const section = document.createElement('section');
+                section.className = 'video-section';
                 const gridContainer = document.createElement('div');
                 gridContainer.className = 'grid-container';
-                groupedByCategory[categoryName].forEach(video => gridContainer.appendChild(createCard(video)));
+                
+                const videos = groupedByCategory[categoryName];
+                videos.forEach((video, index) => {
+                    const card = createCard(video);
+                    if (index >= 6) {
+                        card.classList.add('hidden-by-default');
+                    }
+                    gridContainer.appendChild(card);
+                });
+
                 section.innerHTML = `<header class="section-header"><h2>${categoryName}</h2></header>`;
                 section.appendChild(gridContainer);
+
+                if (videos.length > 6) {
+                    const showMoreBtn = document.createElement('button');
+                    showMoreBtn.textContent = 'Show More';
+                    showMoreBtn.className = 'btn show-more-btn';
+                    section.appendChild(showMoreBtn);
+                }
                 sectionsContainer.appendChild(section);
             }
         }
@@ -430,7 +552,6 @@
                 username: document.getElementById('setupUsername').value,
                 sheetId: document.getElementById('setupSheetId').value,
                 videoScriptUrl: document.getElementById('setupVideoScriptUrl').value,
-                // profilePic: ... handle file upload
             };
 
             try {
@@ -448,6 +569,24 @@
             }
         });
 
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('show-more-btn')) {
+                const section = e.target.closest('.video-section');
+                const hiddenCards = section.querySelectorAll('.card.hidden-by-default');
+                let count = 0;
+                for (const card of hiddenCards) {
+                    if (count < 6) {
+                        card.style.display = 'block';
+                        card.classList.remove('hidden-by-default');
+                    }
+                    count++;
+                }
+                if (section.querySelectorAll('.card.hidden-by-default').length === 0) {
+                    e.target.style.display = 'none';
+                }
+            }
+        });
+
         sectionsContainer.addEventListener('click', (e) => {
             const thumbnail = e.target.closest('.thumbnail');
             if (thumbnail) {
@@ -459,6 +598,25 @@
             iframe.src = '';
             overlay.classList.remove('active');
         });
+
+        window.onscroll = () => {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.style.display = "block";
+            } else {
+                backToTopBtn.style.display = "none";
+            }
+        };
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            darkModeToggle.querySelector('i').className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        darkModeToggle.addEventListener('click', toggleDarkMode);
 
         // --- UTILITY FUNCTIONS ---
         function openModal(modal) { if(modal) modal.classList.add('active'); }
