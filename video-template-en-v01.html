@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,14 +97,6 @@
         .profile-pic-preview { width: 120px; height: 120px; border-radius: 50%; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; color: var(--text-light); }
         .profile-pic-preview i { font-size: 2rem; }
         .profile-pic-uploader input[type="file"] { display: none; }
-        .main-footer { padding: 2rem 1rem; text-align: center; color: var(--text-light); border-top: 1px solid var(--border-color); margin-top: 4rem; }
-        .footer-social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-        .footer-social-link { color: var(--text-light); background-color: transparent; width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5rem; transition: all 0.3s ease; }
-        .footer-social-link:hover { color: var(--primary); transform: translateY(-3px); }
-        .footer-signature { font-size: 10px; }
-        .footer-signature a { color: var(--text-light); text-decoration: none; }
-        .footer-signature a:hover { text-decoration: underline; color: var(--primary); }
-        .footer-signature .heart-icon { display: inline-block; width: 1em; height: 1em; fill: var(--primary); vertical-align: middle; }
         .disabled-page { text-align: center; padding: 4rem 1rem; }
         .disabled-page .unlink-icon { width: 150px; height: 150px; color: var(--primary); margin-bottom: 2rem; }
         .disabled-page h2 { font-size: 2rem; color: var(--text); }
@@ -141,6 +134,43 @@
         #backToTopBtn:hover { opacity: 0.8; }
         #login-message { color: var(--primary); margin: 1rem 0; }
         .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+        
+        /* Reverted Footer Styles */
+        .footer { padding: 2rem 1rem; text-align: center; color: var(--text-light); border-top: 1px solid var(--border-color); margin-top: 4rem; }
+        .social-links-container { width: 100%; max-width: 100%; overflow-x: auto; padding: 10px 0; -webkit-overflow-scrolling: touch; }
+        .social-links { margin-top: 0; display: flex; justify-content: center; gap: 1rem; margin: 0; flex-wrap: wrap; padding: 0.25rem; min-width: min-content; }
+        .social-link {
+            /* Light Theme Default */
+            background: var(--card-bg);
+            color: var(--secondary);
+            border: 1px solid var(--border-color);
+            /* Base Styles */
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.25rem; 
+            padding: 0.35rem 0.75rem; 
+            border-radius: 6px; 
+            transition: all 0.3s ease; 
+            font-size: 0.85rem; 
+            box-shadow: var(--shadow); 
+            white-space: nowrap; 
+            min-width: max-content;
+        }
+        .social-link:hover {
+            background: var(--border-color);
+            transform: translateY(-2px);
+        }
+        .dark-mode .social-link {
+            background: var(--card-bg);
+            color: var(--text);
+            border-color: var(--border-color);
+        }
+        .bebell-footer { padding: 20px; font-size: 12px; }
+        .bebell-footer p { margin: 0; line-height: 1.6; }
+        .bebell-link { color: var(--text-light); text-decoration: none; }
+        .bebell-link:hover { color: var(--primary); text-decoration: underline; }
+
         @media (max-width: 768px) {
             .container { padding: 1rem 1.5rem; }
             .grid-container {
@@ -208,7 +238,7 @@
         </div>
     </div>
 
-    <footer class="main-footer" id="mainFooter" style="display: none;"></footer>
+    <footer class="footer" id="mainFooter" style="display: none;"></footer>
 
     <button id="backToTopBtn" title="Go to top"><i class="fas fa-arrow-up"></i></button>
 
@@ -259,9 +289,6 @@
             <a href="#" id="overlayCtaButton" class="btn" style="display:none; margin: 1rem auto 0; width: fit-content;" target="_blank" rel="noopener noreferrer"></a>
         </div>
     </div>
-
-
-    
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -406,27 +433,18 @@
         }
 
         function renderFooter(config) {
-            const socialLinks = {
-                whatsapp: { url: config.whatsappurl || 'https://wa.me/18296203970', icon: 'fab fa-whatsapp' },
-                instagram: { url: config.instagramurl || 'https://instagram.com/bebelldigitalsolutions', icon: 'fab fa-instagram' },
-                facebook: { url: config.facebookurl || 'https://facebook.com/bebelldigitalsolutions', icon: 'fab fa-facebook' },
-                x: { url: config.xurl || 'https://x.com/BebellDigitalS', icon: 'fab fa-twitter' },
-                youtube: { url: config.youtubeurl || 'https://www.youtube.com/@bebelldigitalsolutions?sub_confirmation=1', icon: 'fab fa-youtube' },
-                linkedin: { url: config.linkedinurl || 'https://www.linkedin.com/in/bebell-digital-solutions-9a4b5a239/', icon: 'fab fa-linkedin' }
-            };
-
-            let socialLinksHTML = Object.entries(socialLinks)
-                .filter(([_, data]) => data.url)
-                .map(([name, data]) => `<a href="${data.url}" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="${name}"><i class="${data.icon}"></i></a>`)
-                .join('');
-
-            const heartSVG = `<svg class="heart-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-            
-            mainFooter.innerHTML = `
-                <div class="footer-social-links">${socialLinksHTML}</div>
-                <div class="footer-signature">
-                    Copyright © ${new Date().getFullYear()} • ${config.brandname || 'Your Brand'} • All rights Reserved.<br>
-                    Powered with ${heartSVG} by <a href="https://bebelldigitalsolutions.com" target="_blank" rel="noopener noreferrer">Bebell Digital Solutions.</a>
+             mainFooter.innerHTML = `
+                <div class="social-links-container">
+                    <div class="social-links">
+                        <a href="https://bebell-digital-solutions.github.io/checklist-creator/" class="social-link" rel="noopener noreferrer" target="_blank"><span>☑️</span> Checklist Creator</a>
+                        <a href="https://bebell-digital-solutions.github.io/tasks-manager/en-v03" class="social-link" rel="noopener noreferrer" target="_blank"><span>🎯</span> Tasks Manager</a>
+                        <a href="https://bebell-digital-solutions.github.io/bookmark-page/en-v03" class="social-link" rel="noopener noreferrer" target="_blank"><span>🔗</span> Links Manager</a>
+                        <a href="https://bebell-digital-solutions.github.io/magic-toolbox-database/en-v03" class="social-link" rel="noopener noreferrer" target="_blank"><span>🧰</span> Magic Toolbox</a>
+                        <a href="mailto:soporte@bebelldigitalsolutions.com" class="social-link" rel="noopener noreferrer" target="_blank"><span>📨</span> Tech Support</a>
+                    </div>
+                </div>
+                <div class="bebell-footer">
+                    <p>Powered with 💖 by <a href="https://bebelldigitalsolutions.com" class="bebell-link" target="_blank">Bebell Digital Solutions.</a><br>Copyright © 2025 • All rights reserved.</p>
                 </div>
             `;
             mainFooter.style.display = 'block';
@@ -702,5 +720,3 @@
     </script>
 </body>
 </html>
-
-
