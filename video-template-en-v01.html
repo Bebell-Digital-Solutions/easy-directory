@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,28 +90,16 @@
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg); color: var(--text); }
+        .form-group .field-instructions { font-size: 0.8rem; color: var(--text-light); margin-top: 0.5rem; }
+        .form-group .field-instructions a { color: var(--primary); text-decoration: none; }
         .profile-pic-uploader { display: flex; flex-direction: column; align-items: center; gap: 1rem; margin-bottom: 1rem; }
         .profile-pic-preview { width: 120px; height: 120px; border-radius: 50%; border: 3px dashed var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; color: var(--text-light); }
         .profile-pic-preview i { font-size: 2rem; }
         .profile-pic-uploader input[type="file"] { display: none; }
         .main-footer { padding: 2rem 1rem; text-align: center; color: var(--text-light); border-top: 1px solid var(--border-color); margin-top: 4rem; }
         .footer-social-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-        .footer-social-link { 
-            color: var(--text-light); 
-            background-color: transparent; 
-            width: 40px; height: 40px; 
-            border-radius: 8px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            text-decoration: none; 
-            font-size: 1.5rem; 
-            transition: all 0.3s ease; 
-        }
-        .footer-social-link:hover {
-            color: var(--primary);
-            transform: translateY(-3px);
-        }
+        .footer-social-link { color: var(--text-light); background-color: transparent; width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5rem; transition: all 0.3s ease; }
+        .footer-social-link:hover { color: var(--primary); transform: translateY(-3px); }
         .footer-signature { font-size: 10px; }
         .footer-signature a { color: var(--text-light); text-decoration: none; }
         .footer-signature a:hover { text-decoration: underline; color: var(--primary); }
@@ -123,17 +112,22 @@
         .notification-banner.show { opacity: 1; visibility: visible; }
         .video-section { margin-bottom: 2rem; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
-        .card { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s ease; position: relative; }
+        .card { background-color: var(--card-bg); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s ease; position: relative; display: flex; flex-direction: column; }
         .card.hidden-by-default { display: none; }
         .card-admin-controls { position: absolute; top: 10px; right: 10px; z-index: 5; display: none; gap: 8px; }
         body.admin-logged-in .card-admin-controls { display: flex; }
         .admin-btn { background-color: rgba(0,0,0,0.6); color: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .thumbnail { position: relative; cursor: pointer; aspect-ratio: 16 / 9; background-color: #e2e8f0; }
         .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .card-content { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.8rem; color: var(--text); }
+        .card-description { color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; }
+        .card-tag { background-color: var(--primary-light); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: none; align-items: center; justify-content: center; z-index: 1000; }
         .overlay.active { display: flex; }
         .video-container { width: 80%; max-width: 900px; position: relative; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; margin-bottom: 1rem; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 8px; }
         .close-btn { position: absolute; top: -15px; right: -15px; color: white; background: #1a202c; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #videoPlaceholder { text-align: center; padding: 4rem 0; }
@@ -145,6 +139,8 @@
             font-size: 18px; box-shadow: var(--shadow);
         }
         #backToTopBtn:hover { opacity: 0.8; }
+        #login-message { color: var(--primary); margin: 1rem 0; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
         @media (max-width: 768px) {
             .container { padding: 1rem 1.5rem; }
             .grid-container {
@@ -221,7 +217,7 @@
         <div class="modal-content">
             <span class="modal-close">&times;</span>
             <h3>Restricted Access</h3>
-            <p id="login-message" style="text-align:center; margin-bottom:1rem;"></p>
+            <p id="login-message"></p>
             <form id="loginForm">
                 <div class="form-group"><label for="loginEmail">Email Address</label><input type="email" id="loginEmail" required></div>
                 <div class="form-group"><label for="loginPassword">Password</label><input type="password" id="loginPassword" required></div>
@@ -242,8 +238,14 @@
                 <div class="form-group"><label for="setupBrandName">Brand Name</label><input type="text" id="setupBrandName" required></div>
                 <div class="form-group"><label for="setupUsername">Username</label><input type="text" id="setupUsername" required></div>
                 <div class="form-group"><label for="setupSheetId">Videos Google Sheet ID</label><input type="text" id="setupSheetId" required></div>
-                <div class="form-group"><label for="setupVideoScriptUrl">Video Script URL</label><input type="text" id="setupVideoScriptUrl" required></div>
-                <button type="submit" class="btn" style="width: 100%;">Launch My Directory</button>
+                <div class="form-group">
+                    <label for="setupVideoScriptUrl">Video Script URL</label>
+                    <input type="text" id="setupVideoScriptUrl" required>
+                    <p class="field-instructions">
+                        Need help? <a href="https://bebell-digital-solutions.github.io/magic-toolbox-database/en-v03" target="_blank" rel="noopener noreferrer">Follow our guide to get your Sheet ID and Video Script URL.</a>
+                    </p>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Launch My Gallery</button>
             </form>
         </div>
     </div>
@@ -254,14 +256,16 @@
             <div class="video-wrapper">
                 <iframe src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
+            <a href="#" id="overlayCtaButton" class="btn" style="display:none; margin: 1rem auto 0; width: fit-content;" target="_blank" rel="noopener noreferrer"></a>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- CONFIGURATION ---
-        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9Khj9xkQDulZ1BcAQIVKEpzPT20SCk5_iiVOpZ1Jl58V3HL5OB2mb5YUE2qafDMUxmQ/exec'; // <-- IMPORTANT: REPLACE WITH YOUR DEPLOYED SCRIPT URL
-        const LIFETIME_ACCESS_URL = 'https://elnegocio.digital'; // <-- IMPORTANT: REPLACE WITH YOUR LANDING PAGE URL
+        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYSeDSPsj0wRYbB5jwt5yMVDWOxPgW33KHV-bNW2JR0fJ6Tt9G5T3q7S9UnAMlHWQb/exec
+'; // <-- IMPORTANT: REPLACE WITH YOUR DEPLOYED SCRIPT URL
+        const LIFETIME_ACCESS_URL = 'https://your-landing-page.com'; // <-- IMPORTANT: REPLACE WITH YOUR LANDING PAGE URL
         const DEFAULT_LOGO_URL = 'https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png';
 
         // --- STATE ---
@@ -270,7 +274,6 @@
         let allVideos = [];
 
         // --- DOM ELEMENTS ---
-        const contentWrapper = document.querySelector('.content-wrapper');
         const videoContent = document.querySelector('.video-content');
         const disabledPage = document.getElementById('disabledPage');
         const mainFooter = document.getElementById('mainFooter');
@@ -291,13 +294,39 @@
         const sectionsContainer = document.getElementById('sections-container');
         const overlay = document.querySelector('.overlay');
         const iframe = document.querySelector('iframe');
+        const overlayCtaButton = document.getElementById('overlayCtaButton');
         const backToTopBtn = document.getElementById('backToTopBtn');
         const videoPlaceholder = document.getElementById('videoPlaceholder');
         const darkModeToggle = document.getElementById('darkModeToggle');
+        const setupProfilePicInput = document.getElementById('setupProfilePic');
+        const setupProfilePicPreview = document.getElementById('setupProfilePicPreview');
+
+        // --- UTILITY FUNCTIONS ---
+        const fileToBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+        });
+
+        function setupImagePreview(fileInput, previewContainer) {
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewContainer.style.backgroundImage = `url(${e.target.result})`;
+                        previewContainer.innerHTML = ''; // Remove icon
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
 
         // --- INITIALIZATION ---
         async function initializeApp() {
-            // Apply theme on load
+            setupImagePreview(setupProfilePicInput, setupProfilePicPreview);
+
             if (localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 darkModeToggle.querySelector('i').className = 'fas fa-sun';
@@ -360,12 +389,12 @@
                 let typeSpeed = isDeleting ? 100 : 200;
 
                 if (!isDeleting && charIndex === currentWord.length + 1) {
-                    typeSpeed = 2000; // Pause at end of word
+                    typeSpeed = 2000;
                     isDeleting = true;
                 } else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
                     wordIndex = (wordIndex + 1) % words.length;
-                    typeSpeed = 500; // Pause before new word
+                    typeSpeed = 500;
                 }
                 
                 setTimeout(type, typeSpeed);
@@ -401,7 +430,7 @@
         }
 
         function showDisabledPage(title = 'Directory Not Available', message = 'This directory is currently not published or is under review.') {
-            contentWrapper.style.display = 'none';
+            document.querySelector('.content-wrapper').style.display = 'none';
             mainFooter.style.display = 'none';
             document.getElementById('disabledTitle').textContent = title;
             document.getElementById('disabledMessage').textContent = message;
@@ -435,7 +464,7 @@
                 allVideos = data;
                 renderVideoContent();
             } catch (error) {
-                sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">Failed to load videos: ${error.message}</p>`;
+                sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">⚠️ Failed to load videos: ${error.message}</p>`;
             }
         }
 
@@ -479,14 +508,19 @@
         function createCard(video) {
             const card = document.createElement('div');
             card.className = 'card';
+            
+            const tagsHtml = video.tags ? video.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('') : '';
+            
             card.innerHTML = `
-                <div class="card-admin-controls">
-                    <button class="admin-btn edit-btn" title="Edit"><i class="fas fa-pencil-alt"></i></button>
-                    <button class="admin-btn delete-btn" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                <div class="thumbnail" data-video-id="${video.id}" data-cta-text="${video.ctatext || ''}" data-cta-link="${video.ctalink || ''}">
+                    <img src="${video.thumbnail || `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}" alt="${video.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/a0aec0?text=Video';">
                 </div>
-                <div class="thumbnail" data-video-id="${video.id}">
-                    <img src="${video.thumbnail || `https://i.ytimg.com/vi/${video.id}/hqdefault.jpg`}" alt="${video.title}">
-                </div>`;
+                <div class="card-content">
+                    <h3 class="card-title">${video.title || 'No Title'}</h3>
+                    <p class="card-description">${video.description || ''}</p>
+                    <div class="card-tags">${tagsHtml}</div>
+                </div>
+            `;
             return card;
         }
 
@@ -527,6 +561,7 @@
                         openModal(setupModal);
                         break;
                     case 'pending_approval':
+                    case 'invalid_credentials':
                         loginMessage.textContent = result.message;
                         break;
                     case 'new_user_pending':
@@ -535,10 +570,10 @@
                         lifetimeAccessBtnContainer.style.display = 'block';
                         break;
                     default:
-                        loginMessage.textContent = result.message || 'An unknown error occurred.';
+                        loginMessage.textContent = `🚨 ${result.message || 'An unknown error occurred.'}`;
                 }
             } catch (error) {
-                loginMessage.textContent = 'Failed to connect. Please try again.';
+                loginMessage.textContent = '⚠️ Failed to connect. Please try again.';
             }
         });
         
@@ -546,12 +581,23 @@
             e.preventDefault();
             showNotification('Setting up your directory...', 'info');
             
+            const profilePicFile = setupProfilePicInput.files[0];
+            let profilePicData = {};
+            if (profilePicFile) {
+                profilePicData = {
+                    base64: await fileToBase64(profilePicFile),
+                    type: profilePicFile.type,
+                    name: profilePicFile.name
+                };
+            }
+
             const setupData = {
                 email: document.getElementById('setupEmail').value,
                 brandName: document.getElementById('setupBrandName').value,
                 username: document.getElementById('setupUsername').value,
                 sheetId: document.getElementById('setupSheetId').value,
                 videoScriptUrl: document.getElementById('setupVideoScriptUrl').value,
+                profilePic: profilePicData
             };
 
             try {
@@ -565,7 +611,7 @@
                 grantAdminAccess(result.userData);
 
             } catch (error) {
-                showNotification(`Setup failed: ${error.message}`, 'error');
+                showNotification(`🚨 Setup failed: ${error.message}`, 'error');
             }
         });
 
@@ -576,7 +622,7 @@
                 let count = 0;
                 for (const card of hiddenCards) {
                     if (count < 6) {
-                        card.style.display = 'block';
+                        card.style.display = 'flex';
                         card.classList.remove('hidden-by-default');
                     }
                     count++;
@@ -590,7 +636,19 @@
         sectionsContainer.addEventListener('click', (e) => {
             const thumbnail = e.target.closest('.thumbnail');
             if (thumbnail) {
+                const ctaText = thumbnail.dataset.ctaText || appConfig.defaultctatext;
+                const ctaLink = thumbnail.dataset.ctaLink || appConfig.defaultctalink;
+
                 iframe.src = `https://www.youtube.com/embed/${thumbnail.dataset.videoId}?autoplay=1`;
+                
+                if (ctaText && ctaLink) {
+                    overlayCtaButton.href = ctaLink;
+                    overlayCtaButton.textContent = ctaText;
+                    overlayCtaButton.style.display = 'flex';
+                } else {
+                    overlayCtaButton.style.display = 'none';
+                }
+                
                 overlay.classList.add('active');
             }
         });
@@ -641,3 +699,5 @@
     </script>
 </body>
 </html>
+
+
