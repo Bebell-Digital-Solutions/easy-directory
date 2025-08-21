@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Directory</title>
+    <title>Easy Gallery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,7 +170,7 @@
         <div class="top-menu-content">
             <div class="logo-container">
                 <img id="appLogo" src="https://bucket.mlcdn.com/a/3336/3336910/images/efd70bdbad93d8089105b519d602a6eccbfa84bf.png" alt="App Logo">
-                <span id="appBrandNameDisplay">Easy Directory</span>
+                <span id="appBrandNameDisplay">Easy Gallery</span>
             </div>
             <div class="top-menu-actions">
                 <div class="fab" id="settingsBtn" title="Settings"><i class="fas fa-cog"></i></div>
@@ -336,15 +336,15 @@
         function applyCustomization(config) {
             appConfig = config;
             document.documentElement.style.setProperty('--primary', config.primarycolor || '#DF1783');
-            mainHeaderTitle.innerHTML = `Welcome to ${config.brandname || 'Easy Directory'}`;
-            document.title = config.brandname || 'Easy Directory';
+            mainHeaderTitle.innerHTML = `Welcome to ${config.brandname || 'Easy Gallery'}`;
+            document.title = config.brandname || 'Easy Gallery';
             appLogo.src = config.logourl || DEFAULT_LOGO_URL;
-            appBrandNameDisplay.textContent = config.brandname || 'Easy Directory';
+            appBrandNameDisplay.textContent = config.brandname || 'Easy Gallery';
             renderFooter(config);
         }
         
         function typeWriterAnimation() {
-            const words = ["Easy Directory", "Your Brand"];
+            const words = ["Easy Gallery", "Your Brand"];
             let wordIndex = 0;
             let charIndex = 0;
             let isDeleting = false;
