@@ -314,6 +314,33 @@
             border-color: #28a745 !important;
         }
 
+        .no-content-placeholder {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+        .no-content-placeholder svg {
+            width: 150px;
+            height: 150px;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+        .no-content-placeholder h2 {
+            font-size: 1.8rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        .no-content-placeholder p {
+            font-size: 1.1rem;
+        }
+
+
+
+
+
+
+        
+
         @media (max-width: 768px) {
             .container { padding: 1rem 1.5rem; }
             .grid-container {
@@ -583,7 +610,7 @@
 
 
     
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- CONFIGURATION ---
@@ -819,6 +846,9 @@
             mainFooter.style.display = 'block';
         }
 
+
+
+        
         function showDisabledPage(title = 'Directory Not Available', message = 'This directory is currently not published or is under review.') {
             document.querySelector('.content-wrapper').style.display = 'none';
             mainFooter.style.display = 'none';
@@ -843,7 +873,10 @@
             closeModal(setupModal);
         }
 
-        // --- DATA FETCHING & RENDERING ---
+
+
+        
+// --- DATA FETCHING & RENDERING ---
         async function fetchVideos(videoScriptUrl, userId) {
             videoPlaceholder.style.display = 'none';
             sectionsContainer.innerHTML = `<p style="text-align:center;">Loading videos...</p>`;
@@ -852,14 +885,35 @@
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 if (data.error) throw new Error(data.error);
+
+                // --- NEW LOGIC STARTS HERE ---
+                // Check if the returned array is empty
+                if (Array.isArray(data) && data.length === 0) {
+                    sectionsContainer.innerHTML = `
+                        <div class="no-content-placeholder">
+                            <i data-lucide="unlink"></i>
+                            <h2>No Video Content Available</h2>
+                            <p>Add your first video from the admin dashboard to get started.</p>
+                        </div>
+                    `;
+                    // This command finds all icon placeholders and renders them
+                    lucide.createIcons();
+                    tagFilters.innerHTML = ''; // Clear any existing tag filters
+                    return; // Stop the function here
+                }
+                // --- NEW LOGIC ENDS HERE ---
+
                 allVideos = data;
                 renderTagFilters(allVideos);
                 filterAndRenderVideos('all');
+
             } catch (error) {
                 sectionsContainer.innerHTML = `<p style="text-align:center; color: red;">⚠️ Failed to load videos: ${error.message}</p>`;
             }
         }
 
+
+        
         function renderTagFilters(videos) {
             const allTags = videos.flatMap(video => video.tags || []);
             const uniqueTags = [...new Set(allTags)];
