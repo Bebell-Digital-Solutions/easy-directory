@@ -515,6 +515,25 @@
                 display: none;
             }
         }
+
+@media (max-width: 768px) {
+    #appBrandNameDisplay {
+        font-size: 20px; /* Fixed 20px size on mobile */
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    #appBrandNameDisplay {
+        font-size: 16px; /* Fixed 16px size on mobile */
+        max-width: 150px;
+    }
+}
+
+
+
+
+	  
     </style>
 </head>
 <body>
@@ -1006,7 +1025,7 @@
             
             const animationTexts = isLoggedIn 
                 ? [config.brandname || "Your Dashboard", "Your Dashboard"]
-                : (config.brandname ? [config.brandname, "A Curated Collection"] : ["Easy Gallery", "Your Brand"]);
+                : (config.brandname ? [config.brandname, "Our Video Gallery"] : ["Easy Gallery", "Your Brand"]);
             typeWriterAnimation(animationTexts);
 
             document.title = config.brandname || 'Easy Gallery';
