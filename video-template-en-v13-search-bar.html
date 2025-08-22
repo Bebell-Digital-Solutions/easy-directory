@@ -981,12 +981,12 @@
                     const userData = result.data;
                     if (userData.status === 'Published') {
                         // Show/hide search container based on settings
-                        if (userData.showsearchonpublic) {
-                            document.querySelector('.controls-container').style.display = 'flex';
-                            searchInput.disabled = false;
-                        } else {
-                            document.querySelector('.controls-container').style.display = 'none';
-                        }
+                        if (userData.showsearchonpublic === true || userData.showsearchonpublic === "TRUE") {
+    document.querySelector('.controls-container').style.display = 'flex';
+    searchInput.disabled = false;
+} else {
+    document.querySelector('.controls-container').style.display = 'none';
+}
                         
                         applyCustomization(userData);
                         videoContent.style.display = 'block';
