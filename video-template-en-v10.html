@@ -238,8 +238,33 @@
             border: none;
             transform: scale(1.1);
         }
-        .close-btn { position: absolute; top: -15px; right: -15px; color: white; background: #1a202c; border-radius: 50%; width: 35px; height: 35px; border: none; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        #videoPlaceholder { text-align: center; padding: 4rem 0; }
+    .close-btn { 
+            position: absolute; 
+            top: -20px; 
+            right: -20px; 
+            color: white; 
+            background: #e53e3e; 
+            border-radius: 50%; 
+            width: 45px; 
+            height: 45px; 
+            border: none; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1001; /* Higher z-index to appear above video */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: #c53030;
+            transform: scale(1.1);
+        }
+	  
+	  
+	  #videoPlaceholder { text-align: center; padding: 4rem 0; }
         .show-more-btn { display: block; margin: 2rem auto 0; }
         #backToTopBtn {
             display: none; position: fixed; bottom: 20px; right: 30px; z-index: 99;
