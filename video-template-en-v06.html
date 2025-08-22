@@ -435,8 +435,8 @@
 
 
     
-    <div id="setupModal" class="modal">
-        <div class="modal-content">
+<div id="setupModal" class="modal" onshow="triggerConfetti()">
+    <div class="modal-content">
             <span class="modal-close">&times;</span>
               <h3>Let's Get You Started! 🎉</h3>
               <p>Your account is approved. Complete your profile to launch your directory.</p>
@@ -1394,13 +1394,9 @@
 
 <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
 
-
 <script type="module">
     // Import the confetti library
     import confetti from 'https://cdn.skypack.dev/canvas-confetti';
-    
-    // Get the modal element
-    const setupModal = document.getElementById('setupModal');
     
     // Create confetti function
     function triggerConfetti() {
@@ -1438,23 +1434,17 @@
         }, 300);
     }
     
-    // Observe modal for display changes
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'style') {
-                if (setupModal.style.display === 'flex') {
-                    triggerConfetti();
-                }
-            }
-        });
+    // Listen for when the setup modal is opened
+    document.addEventListener('modalOpened', function(e) {
+        if (e.detail.modalId === 'setupModal') {
+            triggerConfetti();
+        }
     });
-    
-    // Start observing the modal for attribute changes
-    observer.observe(setupModal, { attributes: true });
 </script>
-    
 
+
+    
     
 </body>
 </html>
-�
+
