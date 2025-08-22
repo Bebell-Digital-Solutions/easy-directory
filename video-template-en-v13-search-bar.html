@@ -103,7 +103,11 @@
         
         
         .logo-container { display: flex; align-items: center; gap: 1rem; }
+
+	  
         #appLogo { height: 40px; width: 40px; object-fit: cover; border-radius: 8px; }
+
+	  
         #appBrandNameDisplay { font-size: 1.5rem; font-weight: 600; color: var(--text); }
         
         
@@ -521,6 +525,23 @@
                 display: none;
             }
         }
+
+@media (max-width: 768px) {
+    #appBrandNameDisplay {
+        font-size: 20px; /* Fixed 20px size on mobile */
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    #appBrandNameDisplay {
+        font-size: 20px; /* Fixed 20px size on mobile */
+        max-width: 120px;
+    }
+}
+
+
+	  
     </style>
 </head>
 <body>
