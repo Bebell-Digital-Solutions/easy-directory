@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Easy Gallery</title>
+	    <!-- Include Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Include Font Awesome for other icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -397,8 +400,15 @@
                 <span id="appBrandNameDisplay">Easy Gallery</span>
             </div>
             
-      <div class="top-menu-actions">
+      
+			
+			<div class="top-menu-actions">
+		  
+		    <!-- Support Icon -->
+                <div class="support-icon" id="supportBtn" title="Support" onclick="window.open('https://helpcenter.easygallery.website', '_blank')"><i data-lucide="headset"></i></div>
+			<!-- Settings Icon -->
                 <div class="fab" id="settingsBtn" title="Settings"><i class="fas fa-cog"></i></div>
+			<!-- Theme Toggle Icon -->
                 <div class="fab" id="darkModeToggle" title="Toggle Theme"><i class="fas fa-moon"></i></div>
                 
             </div>
@@ -640,7 +650,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- CONFIGURATION ---
-        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwK_zbKVUyNpVKQJZ5qZMNKaLRnbWGAmEVYHF9xd3eriMoSkfIhjAsoO-J3X8S0MHtBvg/exec';
+        const ADMIN_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby16RQ3wTSd7d6U-BpfByafo92R2DNplXFoERvqwx-lu9OYfaW-sZhzIJi-wsrFMnxYkA/exec';
         const LIFETIME_ACCESS_URL = 'https://your-landing-page.com';
         const DEFAULT_LOGO_URL = 'https://bucket.mlcdn.com/a/3336/3336910/images/0c2d26503a8c7847080b2ce8174e622f1274782c.png';
         const DEFAULT_PROFILE_PIC_URL = 'https://bucket.mlcdn.com/a/3336/3336910/images/720acb42aae5c4c7657fe94291a91807c55c356a.png';
