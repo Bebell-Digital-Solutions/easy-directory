@@ -1088,15 +1088,15 @@
                         openModal(setupModal);
                         break;
                     case 'waiting_for_approval':
-                        loginMessage.innerHTML = 'Your Account is currently under review and waiting for approval. If you believe this is taking too long, please visit our <a href="https://helpcenter.easygallery.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">help center</a>.';
+                        loginMessage.innerHTML = '⚠️ Your Account is currently under review and waiting for approval. If you need any help, please visit our <a href="https://helpcenter.easygallery.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">help center</a>.';
                         break;
                     case 'pending_approval':
                     case 'invalid_credentials':
                         loginMessage.textContent = result.message;
                         break;
                     case 'new_user_pending':
-                        loginMessage.textContent = "Account not found. Your access request has been submitted.";
-                        lifetimeAccessBtnContainer.innerHTML = `<a href="${LIFETIME_ACCESS_URL}" target="_blank" class="btn" style="width:100%">Grab Your Lifetime Access Now</a>`;
+                        loginMessage.innerHTML = '⚠️ Account not found. Your access request has been submitted and is now under review. If you need help, please visit our <a href="https://helpcenter.easygallery.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">help center</a>.';
+                        lifetimeAccessBtnContainer.innerHTML = `<a href="${LIFETIME_ACCESS_URL}" target="_blank" class="btn" style="width:100%">Grab Your Access Now</a>`;
                         lifetimeAccessBtnContainer.style.display = 'block';
                         break;
                     default:
@@ -1148,10 +1148,14 @@
             }
         });
 
+
+		
+		
+
         sectionsContainer.addEventListener('click', (e) => {
             const thumbnail = e.target.closest('.thumbnail');
             if (thumbnail) {
-                const ctaText = thumbnail.dataset.ctaText || appConfig.defaultctatext || "Subscribe to our channel";
+                const ctaText = thumbnail.dataset.ctaText || appConfig.defaultctatext || "Subscribe to our Channel";
                 const ctaLink = thumbnail.dataset.ctaLink || appConfig.defaultctalink || "#";
 
                 iframe.src = `https://www.youtube.com/embed/${thumbnail.dataset.videoId}?autoplay=1`;
@@ -1162,6 +1166,9 @@
                 
                 overlay.classList.add('active');
             }
+
+
+			
 
             if (e.target.closest('.edit-btn')) {
                 const card = e.target.closest('.card');
@@ -1404,7 +1411,7 @@
                 const result = await response.json();
                 if (result.status !== 'success') throw new Error(result.message);
                 
-                showNotification('Settings saved successfully!', 'success');
+                showNotification('Settings saved successfully! ✅', 'success');
                 if(result.logoUrl) appConfig.logourl = result.logoUrl;
                 if(result.profilePicUrl) appConfig.profilepicurl = result.profilePicUrl;
                 Object.assign(appConfig, settingsData);
@@ -1417,7 +1424,7 @@
         });
 
         deleteAllDataBtn.addEventListener('click', async () => {
-            showNotification('Deleting all video data...', 'info');
+            showNotification('🗑️ Deleting all video data...', 'info');
             try {
                 const response = await fetch(appConfig.videoscripturl, {
                     method: 'POST',
@@ -1430,7 +1437,7 @@
                 const result = await response.json();
                 if (result.status !== 'success') throw new Error(result.message);
 
-                showNotification('All video data has been deleted!', 'success');
+                showNotification('All video data has been deleted! 🗑️', 'success');
                 fetchVideos(appConfig.videoscripturl, appConfig.userid);
             } catch (error) {
                  showNotification(`Error deleting data: ${error.message}`, 'error');
@@ -1443,9 +1450,9 @@
             shareableUrlInput.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
-                showNotification('URL copied to clipboard!', 'success');
+                showNotification('✅ URL copied to clipboard!', 'success');
             } catch (err) {
-                showNotification('Failed to copy URL.', 'error');
+                showNotification('❌ Failed to copy URL.', 'error');
             }
         });
 
