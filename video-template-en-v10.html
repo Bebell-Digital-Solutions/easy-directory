@@ -1091,9 +1091,11 @@
                         loginMessage.innerHTML = '⚠️ Your Account is currently under review and waiting for approval. If you need any help, please visit our <a href="https://helpcenter.easygallery.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">help center</a>.';
                         break;
                     case 'pending_approval':
-                    case 'invalid_credentials':
-                        loginMessage.textContent = result.message;
-                        break;
+    					loginMessage.innerHTML = result.message; // Changed from textContent to innerHTML
+    					break;
+					case 'invalid_credentials':
+    					loginMessage.textContent = result.message; // Keep as textContent (no HTML needed)
+    					break;
                     case 'new_user_pending':
                         loginMessage.innerHTML = '⚠️ Account not found. Your access request has been submitted and is now under review. If you need help, please visit our <a href="https://helpcenter.easygallery.website" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">help center</a>.';
                         lifetimeAccessBtnContainer.innerHTML = `<a href="${LIFETIME_ACCESS_URL}" target="_blank" class="btn" style="width:100%">Grab Your Access Now</a>`;
