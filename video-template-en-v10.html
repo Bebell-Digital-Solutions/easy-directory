@@ -1101,9 +1101,14 @@
                         lifetimeAccessBtnContainer.innerHTML = `<a href="${LIFETIME_ACCESS_URL}" target="_blank" class="btn" style="width:100%">Grab Your Access Now</a>`;
                         lifetimeAccessBtnContainer.style.display = 'block';
                         break;
+						
                     default:
-                        loginMessage.textContent = `🚨 ${result.message || 'An unknown error occurred.'}`;
-                }
+    if (result.message && result.message.includes('<a href')) {
+        loginMessage.innerHTML = `🚨 ${result.message}`;
+    } else {
+        loginMessage.textContent = `🚨 ${result.message || 'An unknown error occurred.'}`;
+    }
+						
             } catch (error) {
                 loginMessage.textContent = '⚠️ Failed to connect. Please try again.';
             }
