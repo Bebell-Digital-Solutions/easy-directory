@@ -42,7 +42,7 @@
         
         .top-menu-bar {
             position: fixed;
-            top: 1rem;
+            top: 2rem;
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 2rem);
@@ -438,7 +438,7 @@
     <div id="setupModal" class="modal">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-              <h3>Let's Get You Started!</h3>
+              <h3>Let's Get You Started! 🎉</h3>
               <p>Your account is approved. Complete your profile to launch your directory.</p>
             <form id="setupForm">
                 <input type="hidden" id="setupEmail">
@@ -1390,6 +1390,71 @@
         initializeApp();
     });
     </script>
+
+
+<canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999;"></canvas>
+
+
+<script type="module">
+    // Import the confetti library
+    import confetti from 'https://cdn.skypack.dev/canvas-confetti';
+    
+    // Get the modal element
+    const setupModal = document.getElementById('setupModal');
+    
+    // Create confetti function
+    function triggerConfetti() {
+        // Set confetti canvas size
+        const canvas = document.getElementById('confetti-canvas');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Create confetti effect
+        confetti({
+            particleCount: 400,
+            spread: 400,
+            origin: {
+                x: 0.5,
+                y: 0.5
+            },
+            colors: ['#DF1783', '#f8a4d4', '#4fd1c5', '#2d3748', '#ffffff'],
+        });
+        
+        // Additional confetti bursts for more celebration
+        setTimeout(() => {
+            confetti({
+                particleCount: 150,
+                angle: 60,
+                spread: 80,
+                origin: { x: 0, y: 0.5 }
+            });
+            
+            confetti({
+                particleCount: 150,
+                angle: 120,
+                spread: 80,
+                origin: { x: 1, y: 0.5 }
+            });
+        }, 300);
+    }
+    
+    // Observe modal for display changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'style') {
+                if (setupModal.style.display === 'flex') {
+                    triggerConfetti();
+                }
+            }
+        });
+    });
+    
+    // Start observing the modal for attribute changes
+    observer.observe(setupModal, { attributes: true });
+</script>
+    
+
+    
 </body>
 </html>
 �
