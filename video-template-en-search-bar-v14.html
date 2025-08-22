@@ -975,12 +975,12 @@
                     const userData = result.data;
                     if (userData.status === 'Published') {
                         // **FIX:** Check for the string "TRUE" instead of a boolean
-                        if (userData.showsearchonpublic === "TRUE") {
-                            document.querySelector('.controls-container').style.display = 'flex';
-                            searchInput.disabled = false;
-                        } else {
-                            document.querySelector('.controls-container').style.display = 'none';
-                        }
+                        if (userData.showsearchonpublic === true || userData.showsearchonpublic === "TRUE") {
+    document.querySelector('.controls-container').style.display = 'flex';
+    searchInput.disabled = false;
+} else {
+    document.querySelector('.controls-container').style.display = 'none';
+}
                         
                         applyCustomization(userData);
                         videoContent.style.display = 'block';
